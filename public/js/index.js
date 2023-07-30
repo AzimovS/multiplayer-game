@@ -22,6 +22,13 @@ socket.on('updatePlayers', (backendPlayers) => {
       players[id] = new Player(backendPlayer.x, backendPlayer.y, 10, 'white');
     }
   }
+
+  for (const id in players) {
+    if (!backendPlayers[id]) {
+      delete players[id];
+    }
+  }
+  console.log(players);
 });
 
 let animationId;
@@ -31,7 +38,7 @@ function animate() {
   c.fillRect(0, 0, canvas.width, canvas.height);
 
   for (const id in players) {
-    const player = players[id]
+    const player = players[id];
     player.draw();
   }
 }
