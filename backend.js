@@ -22,6 +22,7 @@ io.on('connection', (socket) => {
   backendPlayers[socket.id] = {
     x: 500 * Math.random(),
     y: 500 * Math.random(),
+    color: `hsl(${360 * Math.random()}, 100%, 50%)`,
   };
 
   io.emit('updatePlayers', backendPlayers);
