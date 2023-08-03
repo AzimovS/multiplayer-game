@@ -5,7 +5,7 @@ const socket = io();
 
 const scoreEl = document.querySelector('#scoreEl');
 
-const devicePixelRatio = window.devicePixelRatio ||  1
+const devicePixelRatio = window.devicePixelRatio || 1;
 
 canvas.width = innerWidth * devicePixelRatio;
 canvas.height = innerHeight * devicePixelRatio;
@@ -26,6 +26,9 @@ socket.on('updatePlayers', (backendPlayers) => {
         radius: 10,
         color: backendPlayer.color,
       });
+    } else {
+      frontendPlayers[id].x = backendPlayer.x
+      frontendPlayers[id].y = backendPlayer.y
     }
   }
 
@@ -49,3 +52,25 @@ function animate() {
 }
 
 animate();
+
+window.addEventListener('keydown', (event) => {
+  if (!frontendPlayers[socket.id]) return;
+  switch (event.code) {
+    case 'KeyW':
+      // frontendPlayers[socket.id].y -= 5;
+      socket.emit('keydown', 'KeyW');
+      break;
+    case 'KeyA':
+      // frontendPlayers[socket.id].x -= 5;
+      socket.emit('keydown', 'KeyA');
+      break;
+    case 'KeyS':
+      // frontendPlayers[socket.id].y += 5;
+      socket.emit('keydown', 'KeyS');
+      break;
+    case 'KeyD':
+      // frontendPlayers[socket.id].x += 5;
+      socket.emit('keydown', 'KeyD');
+      break;
+  }
+});
