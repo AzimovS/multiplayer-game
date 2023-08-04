@@ -57,19 +57,19 @@ window.addEventListener('keydown', (event) => {
   if (!frontendPlayers[socket.id]) return;
   switch (event.code) {
     case 'KeyW':
-      // frontendPlayers[socket.id].y -= 5;
+      frontendPlayers[socket.id].y -= 5;
       socket.emit('keydown', 'KeyW');
       break;
     case 'KeyA':
-      // frontendPlayers[socket.id].x -= 5;
+      frontendPlayers[socket.id].x -= 5;
       socket.emit('keydown', 'KeyA');
       break;
     case 'KeyS':
-      // frontendPlayers[socket.id].y += 5;
+      frontendPlayers[socket.id].y += 5;
       socket.emit('keydown', 'KeyS');
       break;
     case 'KeyD':
-      // frontendPlayers[socket.id].x += 5;
+      frontendPlayers[socket.id].x += 5;
       socket.emit('keydown', 'KeyD');
       break;
   }
