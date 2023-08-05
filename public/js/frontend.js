@@ -70,6 +70,11 @@ function animate() {
     const frontendPlayer = frontendPlayers[id];
     frontendPlayer.draw();
   }
+
+  for (let i = frontendProjectiles.length - 1; i >= 0; i--) {
+    const frontendProjectile = frontendProjectiles[i];
+    frontendProjectile.update();
+  }
 }
 
 animate();
