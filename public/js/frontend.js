@@ -26,6 +26,21 @@ socket.on('updatePlayers', (backendPlayers) => {
         radius: 10,
         color: backendPlayer.color,
       });
+    } else if (id === socket.id) {
+      frontendPlayers[id].x = backendPlayer.x;
+      frontendPlayers[id].y = backendPlayer.y;
+
+      const lastBackendInputIndex = playerInputs.findIndex((input) => {
+        backendPlayer.sequenceNumber === input.sequenceNumber;
+      });
+
+      if (lastBackendInputIndex > -1)
+        playerInputs.splice(0, lastBackendInputIndex + 1);
+
+      playerInputs.forEach((input) => {
+        frontendPlayers[id].x += input.dx;
+        frontendPlayers[id].y += input.dy;
+      });
     } else {
       frontendPlayers[id].x = backendPlayer.x;
       frontendPlayers[id].y = backendPlayer.y;
@@ -69,23 +84,33 @@ const keys = {
 };
 
 const SPEED = 10;
+const playerInputs = [];
+let sequenceNumber = 0;
 setInterval(() => {
   if (keys.w.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, dx: 0, dy: -SPEED });
     frontendPlayers[socket.id].y -= SPEED;
-    socket.emit('keydown', 'KeyW');
+    socket.emit('keydown', { keycode: 'KeyW', sequenceNumber });
   }
   if (keys.a.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, dx: -SPEED, dy: 0 });
     frontendPlayers[socket.id].x -= SPEED;
-    socket.emit('keydown', 'KeyA');
+    socket.emit('keydown', { keycode: 'KeyA', sequenceNumber });
   }
 
   if (keys.s.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, dx: 0, dy: SPEED });
     frontendPlayers[socket.id].y += SPEED;
-    socket.emit('keydown', 'KeyS');
+    socket.emit('keydown', { keycode: 'KeyS', sequenceNumber });
   }
   if (keys.d.pressed) {
+    sequenceNumber++;
+    playerInputs.push({ sequenceNumber, dx: SPEED, dy: 0 });
     frontendPlayers[socket.id].x += SPEED;
-    socket.emit('keydown', 'KeyD');
+    socket.emit('keydown', { keycode: 'KeyD', sequenceNumber });
   }
 }, 15);
 

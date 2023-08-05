@@ -35,7 +35,8 @@ io.on('connection', (socket) => {
     io.emit('updatePlayers', backendPlayers);
   });
 
-  socket.on('keydown', (keycode) => {
+  socket.on('keydown', ({ keycode, sequenceNumber }) => {
+    backendPlayers[socket.id].sequenceNumber = sequenceNumber;
     switch (keycode) {
       case 'KeyW':
         backendPlayers[socket.id].y -= SPEED;
