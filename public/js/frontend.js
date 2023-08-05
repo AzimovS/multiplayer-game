@@ -31,7 +31,7 @@ socket.on('updatePlayers', (backendPlayers) => {
       frontendPlayers[id].y = backendPlayer.y;
 
       const lastBackendInputIndex = playerInputs.findIndex((input) => {
-        backendPlayer.sequenceNumber === input.sequenceNumber;
+        return backendPlayer.sequenceNumber === input.sequenceNumber;
       });
 
       if (lastBackendInputIndex > -1)
@@ -42,8 +42,14 @@ socket.on('updatePlayers', (backendPlayers) => {
         frontendPlayers[id].y += input.dy;
       });
     } else {
-      frontendPlayers[id].x = backendPlayer.x;
-      frontendPlayers[id].y = backendPlayer.y;
+      // for all other players
+
+      gsap.to(frontendPlayers[id], {
+        x: backendPlayer.x,
+        y: backendPlayer.y,
+        duration: 0.015,
+        ease: 'linear',
+      });
     }
   }
 
