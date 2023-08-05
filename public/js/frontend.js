@@ -14,6 +14,7 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 const frontendPlayers = {};
+const frontendProjectiles = [];
 
 socket.on('updatePlayers', (backendPlayers) => {
   for (const id in backendPlayers) {
@@ -43,7 +44,6 @@ socket.on('updatePlayers', (backendPlayers) => {
       });
     } else {
       // for all other players
-
       gsap.to(frontendPlayers[id], {
         x: backendPlayer.x,
         y: backendPlayer.y,
