@@ -32,6 +32,13 @@ io.on('connection', (socket) => {
 
   io.emit('updatePlayers', backendPlayers);
 
+  socket.on('initCanvas', ({ width, height }) => {
+    backendPlayers[socket.id].canvas = {
+      width,
+      height,
+    };
+  });
+
   socket.on('shoot', ({ x, y, angle }) => {
     projectileId++;
 
@@ -81,6 +88,18 @@ setInterval(() => {
   for (const id in backendProjectiles) {
     backendProjectiles[id].x += backendProjectiles[id].velocity.x;
     backendProjectiles[id].y += backendProjectiles[id].velocity.y;
+
+    const PROJECTILE_RADIUS = 5;
+    if (
+      backendProjectiles[id].x - PROJECTILE_RADIUS >=
+        backendPlayers[backendProjectiles[id].playerId]?.canvas?.width ||
+      backendProjectiles[id].x + PROJECTILE_RADIUS <= 0 ||
+      backendProjectiles[id].y - PROJECTILE_RADIUS >=
+        backendPlayers[backendProjectiles[id].playerId]?.canvas?.height ||
+      backendProjectiles[id].y + PROJECTILE_RADIUS <= 0
+    ) {
+      delete backendProjectiles[id];
+    }
   }
 
   io.emit('updateProjectiles', backendProjectiles);
