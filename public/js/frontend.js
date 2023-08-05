@@ -14,7 +14,25 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 const frontendPlayers = {};
-const frontendProjectiles = [];
+const frontendProjectiles = {};
+
+socket.on('updateProjectiles', (backendProjectiles) => {
+  for (const id in backendProjectiles) {
+    const backendProjectile = backendProjectiles[id];
+    if (!frontendProjectiles[id]) {
+      frontendProjectiles[id] = new Projectile({
+        x: backendProjectile.x,
+        y: backendProjectile.y,
+        radius: 5,
+        color: frontendPlayers[backendProjectile.playerId]?.color,
+        velocity: backendProjectile.velocity,
+      });
+    } else {
+      frontendProjectiles[id].x += backendProjectiles[id].velocity.x;
+      frontendProjectiles[id].y += backendProjectiles[id].velocity.y;
+    }
+  }
+});
 
 socket.on('updatePlayers', (backendPlayers) => {
   for (const id in backendPlayers) {
@@ -71,10 +89,10 @@ function animate() {
     frontendPlayer.draw();
   }
 
-  // for (let i = frontendProjectiles.length - 1; i >= 0; i--) {
-  //   const frontendProjectile = frontendProjectiles[i];
-  //   frontendProjectile.update();
-  // }
+  for (const id in frontendProjectiles) {
+    const frontendProjectile = frontendProjectiles[id];
+    frontendProjectile.draw();
+  }
 }
 
 animate();
