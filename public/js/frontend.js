@@ -71,10 +71,10 @@ function animate() {
     frontendPlayer.draw();
   }
 
-  for (let i = frontendProjectiles.length - 1; i >= 0; i--) {
-    const frontendProjectile = frontendProjectiles[i];
-    frontendProjectile.update();
-  }
+  // for (let i = frontendProjectiles.length - 1; i >= 0; i--) {
+  //   const frontendProjectile = frontendProjectiles[i];
+  //   frontendProjectile.update();
+  // }
 }
 
 animate();
