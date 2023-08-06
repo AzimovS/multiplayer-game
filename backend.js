@@ -19,6 +19,8 @@ const backendPlayers = {};
 const backendProjectiles = {};
 
 const SPEED = 10;
+const RADIUS = 10;
+const PROJECTILE_RADIUS = 5;
 let projectileId = 0;
 
 io.on('connection', (socket) => {
@@ -32,11 +34,17 @@ io.on('connection', (socket) => {
 
   io.emit('updatePlayers', backendPlayers);
 
-  socket.on('initCanvas', ({ width, height }) => {
+  socket.on('initCanvas', ({ width, height, devicePixelRatio }) => {
     backendPlayers[socket.id].canvas = {
       width,
       height,
     };
+
+    backendPlayers[socket.id].radius = RADIUS;
+
+    if (devicePixelRatio > 1) {
+      backendPlayers[socket.id].radius = 2 * RADIUS;
+    }
   });
 
   socket.on('shoot', ({ x, y, angle }) => {
@@ -99,6 +107,25 @@ setInterval(() => {
       backendProjectiles[id].y + PROJECTILE_RADIUS <= 0
     ) {
       delete backendProjectiles[id];
+      continue;
+    }
+
+    for (const playerId in backendPlayers) {
+      const backendPlayer = backendPlayers[playerId];
+
+      const DISTANCE = Math.hypot(
+        backendProjectiles[id].x - backendPlayer.x,
+        backendProjectiles[id].y - backendPlayer.y
+      );
+
+      if (
+        DISTANCE < PROJECTILE_RADIUS + backendPlayer.radius &&
+        backendProjectiles[id].playerId !== playerId
+      ) {
+        delete backendProjectiles[id];
+        delete backendPlayers[playerId];
+        break;
+      }
     }
   }
 
