@@ -62,8 +62,12 @@ socket.on('updatePlayers', (backendPlayers) => {
 
       document.querySelector(
         '#playerLabels'
-      ).innerHTML += `<div data-id="${id}">${id}: 0</div>`;
+      ).innerHTML += `<div data-id="${id}">${id}: ${backendPlayer.score}</div>`;
     } else if (id === socket.id) {
+      document.querySelector(
+        `<div data-id="${id}">`
+      ).innerHTML = `${id}: ${backendPlayer.score}</div>`;
+
       frontendPlayers[id].x = backendPlayer.x;
       frontendPlayers[id].y = backendPlayer.y;
 
@@ -79,6 +83,9 @@ socket.on('updatePlayers', (backendPlayers) => {
         frontendPlayers[id].y += input.dy;
       });
     } else {
+      document.querySelector(
+        `<div data-id="${id}">`
+      ).innerHTML = `${id}: ${backendPlayer.score}</div>`;
       // for all other players
       gsap.to(frontendPlayers[id], {
         x: backendPlayer.x,
