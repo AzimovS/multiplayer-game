@@ -27,6 +27,7 @@ socket.on('connect', () => {
 socket.on('updateProjectiles', (backendProjectiles) => {
   for (const id in backendProjectiles) {
     const backendProjectile = backendProjectiles[id];
+
     if (!frontendProjectiles[id]) {
       frontendProjectiles[id] = new Projectile({
         x: backendProjectile.x,
@@ -62,37 +63,63 @@ socket.on('updatePlayers', (backendPlayers) => {
 
       document.querySelector(
         '#playerLabels'
-      ).innerHTML += `<div data-id="${id}">${id}: ${backendPlayer.score}</div>`;
-    } else if (id === socket.id) {
-      document.querySelector(
-        `<div data-id="${id}">`
-      ).innerHTML = `${id}: ${backendPlayer.score}</div>`;
-
-      frontendPlayers[id].x = backendPlayer.x;
-      frontendPlayers[id].y = backendPlayer.y;
-
-      const lastBackendInputIndex = playerInputs.findIndex((input) => {
-        return backendPlayer.sequenceNumber === input.sequenceNumber;
-      });
-
-      if (lastBackendInputIndex > -1)
-        playerInputs.splice(0, lastBackendInputIndex + 1);
-
-      playerInputs.forEach((input) => {
-        frontendPlayers[id].x += input.dx;
-        frontendPlayers[id].y += input.dy;
-      });
+      ).innerHTML += `<div data-id="${id}" data-score="${backendPlayer.score}">${id}: ${backendPlayer.score}</div>`;
     } else {
       document.querySelector(
-        `<div data-id="${id}">`
-      ).innerHTML = `${id}: ${backendPlayer.score}</div>`;
-      // for all other players
-      gsap.to(frontendPlayers[id], {
-        x: backendPlayer.x,
-        y: backendPlayer.y,
-        duration: 0.015,
-        ease: 'linear',
+        `div[data-id="${id}"]`
+      ).innerHTML = `${id}: ${backendPlayer.score}`;
+
+      document
+        .querySelector(`div[data-id="${id}"]`)
+        .setAttribute('data-score', backendPlayer.score);
+
+      // sorts the players divs
+      const parentDiv = document.querySelector('#playerLabels');
+      const childDivs = Array.from(parentDiv.querySelectorAll('div'));
+
+      childDivs.sort((a, b) => {
+        const scoreA = Number(a.getAttribute('data-score'));
+        const scoreB = Number(b.getAttribute('data-score'));
+
+        return scoreB - scoreA;
       });
+
+      // removes old elements
+      childDivs.forEach((div) => {
+        parentDiv.removeChild(div);
+      });
+
+      // adds sorted elements
+      childDivs.forEach((div) => {
+        parentDiv.appendChild(div);
+      });
+
+      if (id === socket.id) {
+        // if a player already exists
+        frontendPlayers[id].x = backendPlayer.x;
+        frontendPlayers[id].y = backendPlayer.y;
+
+        const lastbackendInputIndex = playerInputs.findIndex((input) => {
+          return backendPlayer.sequenceNumber === input.sequenceNumber;
+        });
+
+        if (lastbackendInputIndex > -1)
+          playerInputs.splice(0, lastbackendInputIndex + 1);
+
+        playerInputs.forEach((input) => {
+          frontendPlayers[id].x += input.dx;
+          frontendPlayers[id].y += input.dy;
+        });
+      } else {
+        // for all other players
+
+        gsap.to(frontendPlayers[id], {
+          x: backendPlayer.x,
+          y: backendPlayer.y,
+          duration: 0.015,
+          ease: 'linear',
+        });
+      }
     }
   }
 
@@ -121,6 +148,11 @@ function animate() {
     const frontendProjectile = frontendProjectiles[id];
     frontendProjectile.draw();
   }
+
+  // for (let i = frontendProjectiles.length - 1; i >= 0; i--) {
+  //   const frontendProjectile = frontendProjectiles[i]
+  //   frontendProjectile.update()
+  // }
 }
 
 animate();
@@ -150,6 +182,7 @@ setInterval(() => {
     frontendPlayers[socket.id].y -= SPEED;
     socket.emit('keydown', { keycode: 'KeyW', sequenceNumber });
   }
+
   if (keys.a.pressed) {
     sequenceNumber++;
     playerInputs.push({ sequenceNumber, dx: -SPEED, dy: 0 });
@@ -163,6 +196,7 @@ setInterval(() => {
     frontendPlayers[socket.id].y += SPEED;
     socket.emit('keydown', { keycode: 'KeyS', sequenceNumber });
   }
+
   if (keys.d.pressed) {
     sequenceNumber++;
     playerInputs.push({ sequenceNumber, dx: SPEED, dy: 0 });
@@ -173,16 +207,20 @@ setInterval(() => {
 
 window.addEventListener('keydown', (event) => {
   if (!frontendPlayers[socket.id]) return;
+
   switch (event.code) {
     case 'KeyW':
       keys.w.pressed = true;
       break;
+
     case 'KeyA':
       keys.a.pressed = true;
       break;
+
     case 'KeyS':
       keys.s.pressed = true;
       break;
+
     case 'KeyD':
       keys.d.pressed = true;
       break;
@@ -191,16 +229,20 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', (event) => {
   if (!frontendPlayers[socket.id]) return;
+
   switch (event.code) {
     case 'KeyW':
       keys.w.pressed = false;
       break;
+
     case 'KeyA':
       keys.a.pressed = false;
       break;
+
     case 'KeyS':
       keys.s.pressed = false;
       break;
+
     case 'KeyD':
       keys.d.pressed = false;
       break;
