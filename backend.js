@@ -25,28 +25,8 @@ let projectileId = 0;
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  backendPlayers[socket.id] = {
-    x: 500 * Math.random(),
-    y: 500 * Math.random(),
-    color: `hsl(${360 * Math.random()}, 100%, 50%)`,
-    sequenceNumber: 0,
-    score: 0,
-  };
 
   io.emit('updatePlayers', backendPlayers);
-
-  socket.on('initCanvas', ({ width, height, devicePixelRatio }) => {
-    backendPlayers[socket.id].canvas = {
-      width,
-      height,
-    };
-
-    backendPlayers[socket.id].radius = RADIUS;
-
-    if (devicePixelRatio > 1) {
-      backendPlayers[socket.id].radius = 2 * RADIUS;
-    }
-  });
 
   socket.on('shoot', ({ x, y, angle }) => {
     projectileId++;
@@ -62,6 +42,29 @@ io.on('connection', (socket) => {
       velocity,
       playerId: socket.id,
     };
+  });
+
+  socket.on('initGame', ({ username, width, height, devicePixelRatio }) => {
+    backendPlayers[socket.id] = {
+      x: 500 * Math.random(),
+      y: 500 * Math.random(),
+      color: `hsl(${360 * Math.random()}, 100%, 50%)`,
+      sequenceNumber: 0,
+      score: 0,
+      username,
+    };
+
+    // where we init our canvas
+    backendPlayers[socket.id].canvas = {
+      width,
+      height,
+    };
+
+    backendPlayers[socket.id].radius = RADIUS;
+
+    if (devicePixelRatio > 1) {
+      backendPlayers[socket.id].radius = 2 * RADIUS;
+    }
   });
 
   socket.on('disconnect', (reason) => {

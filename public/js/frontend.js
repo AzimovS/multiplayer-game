@@ -63,11 +63,11 @@ socket.on('updatePlayers', (backendPlayers) => {
 
       document.querySelector(
         '#playerLabels'
-      ).innerHTML += `<div data-id="${id}" data-score="${backendPlayer.score}">${id}: ${backendPlayer.score}</div>`;
+      ).innerHTML += `<div data-id="${id}" data-score="${backendPlayer.score}">${backendPlayer.username}: ${backendPlayer.score}</div>`;
     } else {
       document.querySelector(
         `div[data-id="${id}"]`
-      ).innerHTML = `${id}: ${backendPlayer.score}`;
+      ).innerHTML = `${backendPlayer.username}: ${backendPlayer.score}`;
 
       document
         .querySelector(`div[data-id="${id}"]`)
@@ -128,6 +128,11 @@ socket.on('updatePlayers', (backendPlayers) => {
     if (!backendPlayers[id]) {
       const divToDelete = document.querySelector(`div[data-id="${id}"]`);
       divToDelete.parentNode.removeChild(divToDelete);
+
+      if (id === socket.id) {
+        document.querySelector('#usernameForm').style.display = 'block';
+      }
+
       delete frontendPlayers[id];
     }
   }
@@ -250,6 +255,12 @@ window.addEventListener('keyup', (event) => {
 });
 
 document.querySelector('#usernameForm').addEventListener('submit', (event) => {
-  event.preventDefault()
-  console.log(document.querySelector('#usernameInput').value)
-})
+  event.preventDefault();
+  document.querySelector('#usernameForm').style.display = 'none';
+  socket.emit('initGame', {
+    width: canvas.width,
+    height: canvas.height,
+    username: document.querySelector('#usernameInput').value,
+    devicePixelRatio,
+  });
+});
