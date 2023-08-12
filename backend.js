@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
     };
   });
 
-  socket.on('initGame', ({ username, width, height, devicePixelRatio }) => {
+  socket.on('initGame', ({ username, width, height }) => {
     backendPlayers[socket.id] = {
       x: 500 * Math.random(),
       y: 500 * Math.random(),
@@ -61,10 +61,6 @@ io.on('connection', (socket) => {
     };
 
     backendPlayers[socket.id].radius = RADIUS;
-
-    if (devicePixelRatio > 1) {
-      backendPlayers[socket.id].radius = 2 * RADIUS;
-    }
   });
 
   socket.on('disconnect', (reason) => {
