@@ -61,6 +61,7 @@ socket.on('updatePlayers', (backendPlayers) => {
         y: backendPlayer.y,
         radius: 10,
         color: backendPlayer.color,
+        username: backendPlayer.username,
       });
 
       document.querySelector(
