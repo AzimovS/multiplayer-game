@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 const backendPlayers = {};
 const backendProjectiles = {};
 
-const SPEED = 10;
+const SPEED = 5;
 const RADIUS = 10;
 const PROJECTILE_RADIUS = 5;
 let projectileId = 0;
@@ -32,8 +32,8 @@ io.on('connection', (socket) => {
     projectileId++;
 
     const velocity = {
-      x: Math.cos(angle) * 10,
-      y: Math.sin(angle) * 10,
+      x: Math.cos(angle) * 5,
+      y: Math.sin(angle) * 5,
     };
 
     backendProjectiles[projectileId] = {
@@ -71,6 +71,9 @@ io.on('connection', (socket) => {
 
   socket.on('keydown', ({ keycode, sequenceNumber }) => {
     const backendPlayer = backendPlayers[socket.id];
+
+    if (!backendPlayers[socket.id]) return;
+
     backendPlayers[socket.id].sequenceNumber = sequenceNumber;
     switch (keycode) {
       case 'KeyW':
@@ -96,14 +99,15 @@ io.on('connection', (socket) => {
 
     if (playerSides.left < 0)
       backendPlayers[socket.id].x = backendPlayer.radius;
+
     if (playerSides.right > 1024)
       backendPlayers[socket.id].x = 1024 - backendPlayer.radius;
+
     if (playerSides.top < 0) backendPlayers[socket.id].y = backendPlayer.radius;
+    
     if (playerSides.bottom > 576)
       backendPlayers[socket.id].y = 576 - backendPlayer.radius;
   });
-
-  console.log(backendPlayers);
 });
 
 // backend ticker
@@ -134,11 +138,15 @@ setInterval(() => {
         backendProjectiles[id].y - backendPlayer.y
       );
 
+      // collision detection
       if (
         DISTANCE < PROJECTILE_RADIUS + backendPlayer.radius &&
         backendProjectiles[id].playerId !== playerId
       ) {
-        backendPlayers[backendProjectiles[id].playerId].score++;
+        if (backendPlayers[backendProjectiles[id].playerId])
+          backendPlayers[backendProjectiles[id].playerId].score++;
+
+        console.log(backendPlayers[backendProjectiles[id].playerId]);
         delete backendProjectiles[id];
         delete backendPlayers[playerId];
         break;
@@ -153,3 +161,5 @@ setInterval(() => {
 server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+
+console.log('server did load');
