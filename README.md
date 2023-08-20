@@ -4,8 +4,6 @@
     Multiplayer game using js and socket.io
     <br />
     <br />
-    <a href="https://azimovs.github.io/cube-surfer/">View Demo</a>
-    ·
     <a href="https://github.com/AzimovS/multiplayer-game/issues">Report Bug</a>
     ·
     <a href="https://github.com/AzimovS/multiplayer-game/issues">Request Feature</a>
