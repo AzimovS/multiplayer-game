@@ -3,10 +3,6 @@
   <p align="center">
     Multiplayer game using js and socket.io
     <br />
-    <br />
-    <a href="https://github.com/AzimovS/multiplayer-game/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/AzimovS/multiplayer-game/issues">Request Feature</a>
   </p>
 <!-- ABOUT THE PROJECT -->
 
